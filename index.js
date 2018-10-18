@@ -17,21 +17,27 @@ var mixins = {
 	ios: {
 		appMeta: 'apple-itunes-app',
 		iconRels: ['apple-touch-icon-precomposed', 'apple-touch-icon'],
-		getStoreLink: function () {
+		getStoreLink: function (link) {
+			if (link)
+				return link;
 			return 'https://itunes.apple.com/' + this.options.appStoreLanguage + '/app/id' + this.appId + "?mt=8";
 		}
 	},
 	android: {
 		appMeta: 'google-play-app',
 		iconRels: ['android-touch-icon', 'apple-touch-icon-precomposed', 'apple-touch-icon'],
-		getStoreLink: function () {
+		getStoreLink: function (link) {
+			if (link)
+				return link;
 			return 'http://play.google.com/store/apps/details?id=' + this.appId;
 		}
 	},
 	windows: {
 		appMeta: 'msApplication-ID',
 		iconRels: ['windows-touch-icon', 'apple-touch-icon-precomposed', 'apple-touch-icon'],
-		getStoreLink: function () {
+		getStoreLink: function (link) {
+			if (link)
+				return link;
 			return 'http://www.windowsphone.com/s?appid=' + this.appId;
 		}
 	}
@@ -56,7 +62,12 @@ var SmartBanner = function (options) {
 		},
 		theme: '', // put platform type ('ios', 'android', etc.) here to force single theme on all device
 		icon: '', // full path to icon image if not using website icon image
-		force: '', // put platform type ('ios', 'android', etc.) here for emulation
+		force: '', // put platform type ('ios', 'android', etc.) here for emulation,
+		redirectLinks: { // [optional] use this link to replace store links
+			ios: '',
+			android: '',
+			windows: ''
+		}
 
 	}, options || {});
 
@@ -109,7 +120,7 @@ SmartBanner.prototype = {
 	constructor: SmartBanner,
 
 	create: function () {
-		var link = this.getStoreLink();
+		var link = this.getStoreLink(this.options.redirectLinks[this.type]);
 		var inStore = this.options.price[this.type] + ' - ' + this.options.store[this.type];
 		var icon;
 
